@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Регистрация{% endblock title %}
+
+{% block content %}
+
+<h1>Регистрация</h1>
+
+{% if user.is_authenticated %}
+    <h3>Вы уже зарегестрировались и вошли как "{{user.username}}"</h3>
+{% else %}
+
+<form method="POST">
+    {% csrf_token %}
+    {{form.as_p}}
+    <input type="submit" class="btn btn-success" value="Зарегестрироваться">
+</form>
+
+{% endif %}
+
+{% endblock content %}

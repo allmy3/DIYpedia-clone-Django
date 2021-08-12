@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Новая статья{% endblock title %}
+
+{% block content %}
+
+<h1>Создание статьи</h1>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{form.media}}
+    {{form.as_p}}
+    <input type="submit" class="btn btn-success" value="Создать">
+</form>
+
+
+{% endblock content %}

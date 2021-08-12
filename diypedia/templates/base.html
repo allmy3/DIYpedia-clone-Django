@@ -1,0 +1,99 @@
+<!doctype html>
+{% load static i18n %}
+{% load i18n posts_tags %}
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <title>DYIClone.com - {% block title %}{% endblock title %}</title>
+    <style>
+      a {
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'index' %}">DIYсlone</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img src="{{user.profile_photo.url}}" alt="profile_photo" height="30px" width="30px" style="border-radius: 100px;">
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="{% url 'my_profile' %}">{% trans 'Профиль' %}</a></li>
+                <li><a class="dropdown-item" href="{% url 'edit_profile' %}">{% trans 'Настройки профиля' %}</a></li>
+                <li><a class="dropdown-item" href="{% url 'new_post' %}">{% trans 'Добавить статью' %}</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'logout' %}">{% trans 'Выйти' %}</a></li>
+              </ul>
+            </li>
+            {% else %}
+              <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Аутентификация
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="{% url 'login' %}">Вход</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'register' %}">Регистрация</a></li>
+              </ul>
+            </li>
+            {% endif %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Категории
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                {% get_categories as categories %}
+                {% for category in categories %}
+                <li><a class="dropdown-item" href="{% url 'category' category.slug %}">{{category.name}}</a></li>
+                {% endfor %}
+              </ul>
+            </li>
+          </ul>
+          <form method='POST' class="d-flex" action="{% url 'set_language' %}" style="padding-right: 2px;">{% csrf_token %}
+            <input name="next" type="hidden" value="{{redirect_to}}">
+            <select name="language">
+              {% get_current_language as LANGUAGE_CODE %}
+              {% get_available_languages as LANGUAGES %}
+              {% get_language_info_list for LANGUAGES as languages %}
+              {% for lang in languages %}
+                <option value="{{lang.code}}" {% if lang.code == LANGUAGE_CODE %}selected{% endif %}>
+                  {{lang.name_local}} ({{lang.code}})
+                </option>
+              {% endfor %}
+            </select>
+            <input type="submit" class="btn btn-outline-primary" value="Переключить">
+          </form>
+          <form method='GET' class="d-flex" action="{% url 'index' %}">
+            <input class="form-control me-2" type="search" placeholder="Поиск" name='q'>
+            <button class="btn btn-outline-success" type="submit">Найти</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-2">
+        {% block content %}{% endblock content %}
+    </div>
+
+    <!-- jQuery -->
+	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+
+    {% block script %}{% endblock script %}
+
+  </body>
+</html>

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}{{post.title}}{% endblock title %}
+
+{% block content %}
+  
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'category' post.category.slug %}">{{post.category}}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{post.title}}</li>
+    </ol>
+  </nav>
+
+  <div class="container">
+      <div class="container">
+            <h3>{{post.title}}</h3>
+            <hr>
+            Просмотры: {{post.views}} | Лайки: {{post.likes_count}}
+            <hr>
+            <img src="{{post.poster.url}}" class="mb-2" height="400px" width="400px">
+            <p>{{post.content|safe}}</p>
+      </div>
+  </div>
+
+{% endblock content %}

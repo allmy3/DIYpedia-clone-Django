@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Вход в аккаунт{% endblock title %}
+
+{% block content %}
+
+<h1>Вход в аккаунт</h1>
+
+{% if user.is_authenticated %}
+    <h3>Вы уже вошли как "{{user.username}}"</h3>
+{% else %}
+
+<form method="POST">
+    {% csrf_token %}
+    {{form.as_p}}
+    <input type="submit" class="btn btn-success" value="Войти">
+</form>
+
+{% endif %}
+
+{% endblock content %}

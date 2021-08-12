@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+{% block title %}Главная{% endblock title %}
+
+{% block content %}
+
+<span>Сортировка: <a href="{% url 'index' %}">По дате</a> | <a href="{% url 'popular_posts' %}">По популярности</a> <br></span>
+
+{% for post in posts %}
+<div class="card" style="width: 18rem; display: inline-block;">
+    <img src="{{post.poster.url}}" class="card-img-top" height="140px" width="145px">
+    <div class="card-body">
+      <h6 class="card-content"><a href="{% url 'post_detail' post.slug %}" style="text-decoration: none; color: black;">{{post.title}}</a></h6>
+    </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">Просмотры: {{post.views}}</span>
+        <form action="{% url 'like' %}" method="POST" class='like-form' id="{{post.id}}">
+          {% csrf_token %}
+          <input type="hidden" name='post_id' value="{{post.id}}">
+          <button type="submit" class='btn btn-outline-success like-btn{{post.id}}'>
+            {% if user not in post.liked.all %}
+              Like
+            {% else %}
+              Unlike
+            {% endif %}
+          </button>
+          <div class="ui grid">
+              <div class="column">
+                Лайки: <span class="like-count{{post.id}}">{{post.likes_count}} 
+              </div>
+            </div>
+      </form>
+    </ul>
+    {% if user == post.author %}
+    <ul class="list-group list-group-flush">
+      <a href="{% url 'update_post' post.slug %}" class="btn btn-primary">Редактировать</a><a href="{% url 'delete_post' post.slug %}" class="btn btn-danger">Удалить</a>
+  </ul>
+  {% else %}
+  <ul class="list-group list-group-flush">
+      <a class="btn btn-primary" style="height: 36px;"></a><a style="height: 36px;" class="btn btn-danger"></a>
+  </ul>
+{% endif %}
+  </div>
+  {% empty %}
+  <h1>Нет постов</h1>
+{% endfor %}
+
+{% endblock content %}
+
+{% block script %}
+<script>
+
+  $( document ).ready(function() {
+      $('.like-form').submit(function(e) {
+          e.preventDefault()
+          
+          const post_id = $(this).attr("id");
+
+          const like_text = $(`.like-btn${post_id}`).text();
+          const likes = $(`.like-count${post_id}`).text();
+
+          const trimCount = parseInt(likes);
+          const trim = $.trim(like_text);
+
+          let res;
+          const url = $(this).attr('action');
+
+          $.ajax({
+            type: 'POST',
+            url: url,
+            data: {
+              'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+              'post_id': post_id,
+            },
+            success: function() {
+              if(trim == 'Unlike') {
+                $(`.like-btn${post_id}`).text('Like');
+                res = trimCount - 1
+              } else {
+                $(`.like-btn${post_id}`).text('Unlike');
+                res = trimCount + 1
+              }
+
+              $(`.like-count${post_id}`).text(res);
+            },
+            error: function() {
+              console.log('error!');
+            }
+          })
+      })
+  });
+
+</script>
+{% endblock script %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Ваш профиль{% endblock title %}
+
+{% block content %}
+
+<h3>Здравствуйте{% if profile.first_name and profile.last_name %}, {{profile.first_name}} {{profile.last_name}}!{% else %}!{% endif %}</h3>
+
+<div class="profile-img">
+    <img src="{{profile.profile_photo.url}}" alt="profile_img" width="350px" height="300px" style='border-radius: 100%;'>
+</div>
+<hr>
+<h3>Ваши посты: </h3>
+<hr>
+{% for post in posts %}
+<div class="card" style="width: 18rem; display: inline-block;">
+    <img src="{{post.poster.url}}" class="card-img-top" alt="...">
+    <div class="card-body">
+      <h6 class="card-content"><a href="{% url 'post_detail' post.slug %}" style="text-decoration: none; color: black;">{{post.title}}</a></h6>
+    </div>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item">Просмотры: {{post.views}} | Лайки: {{post.likes_count}} 
+        <form action="{% url 'like' %}" method="POST">
+          {% csrf_token %}
+          <input type="hidden" name='post_id' value="{{post.id}}">
+          <button type="submit" class='btn btn-outline-success'>like</button>
+        </form>
+    </ul>
+    {% if user == post.author %}
+    <ul class="list-group list-group-flush">
+      <a href="{% url 'update_post' post.slug %}" class="btn btn-primary">Редактировать</a><a href="{% url 'delete_post' post.slug %}" class="btn btn-danger">Удалить</a>
+  </ul>
+  {% endif %}
+  </div>
+{% endfor %}
+
+{% endblock content %}
